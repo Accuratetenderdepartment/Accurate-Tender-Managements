@@ -3,168 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOQ Calculator - Accurate Surveillance India</title>
+    <title>Accurate Tender Management - Smart Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #f4f7f9; }
-        .header-brand { background: #002e5d; color: white; padding: 30px; text-align: center; }
-        .header-brand h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
-        .header-brand p { margin: 5px 0 0; opacity: 0.9; }
-        
-        .user-info { display: flex; justify-content: space-around; background: #fff; padding: 15px; border-bottom: 2px solid #002e5d; font-size: 14px; }
-        .user-info div { font-weight: bold; color: #333; }
-
-        .container { max-width: 1100px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        .config-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; }
-        label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555; }
-        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-calc { background: #28a745; color: white; flex: 2; }
-        .btn-pdf { background: #dc3545; color: white; flex: 1; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #002e5d; color: white; padding: 12px; text-align: left; font-size: 13px; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
-        .total-section { margin-top: 20px; padding: 15px; background: #002e5d; color: white; border-radius: 5px; text-align: right; }
-        .total-section h2 { margin: 0; font-size: 22px; }
+        :root { --primary: #002e5d; --secondary: #28a745; --danger: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f4f8; }
+        .header { background: var(--primary); color: white; padding: 25px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .biz-info { display: flex; justify-content: center; gap: 40px; background: white; padding: 10px; border-bottom: 2px solid var(--primary); font-size: 14px; font-weight: 600; }
+        .container { max-width: 1200px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .control-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #e1e4e8; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; }
+        input, select { padding: 10px; border: 1px solid #ced4da; border-radius: 6px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 5px rgba(0,46,93,0.2); }
+        .actions { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-calc { background: var(--secondary); }
+        .btn-pdf { background: var(--danger); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th { background: var(--primary); color: white; padding: 15px; text-align: left; font-size: 13px; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 13px; color: #444; }
+        tr:nth-child(even) { background: #f9fbff; }
+        .grand-total-box { margin-top: 25px; background: var(--primary); color: white; padding: 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .grand-total-box h2 { margin: 0; font-size: 28px; }
     </style>
 </head>
 <body>
 
-<div class="header-brand">
+<div class="header">
     <h1>ACCURATE SURVEILLANCE INDIA PVT LTD</h1>
-    <p>Security & Automation Experts</p>
+    <p style="margin: 5px 0 0; opacity: 0.8;">Advanced Tender & BOQ Costing Engine</p>
 </div>
 
-<div class="user-info">
-    <div>👤 Manager: Sumit Sharma</div>
-    <div>📍 Location: Rohini, Delhi</div>
-    <div>📞 Contact: [Enter Phone Number]</div>
+<div class="biz-info">
+    <span>👤 Manager: Sumit Sharma</span>
+    <span>📍 Location: Rohini, Delhi</span>
+    <span>📞 Contact: 9311984427</span>
 </div>
 
 <div class="container">
-    <div class="config-bar">
+    <div class="control-panel">
         <div class="input-group">
-            <label>Upload BOQ (Excel)</label>
-            <input type="file" id="fileInput">
+            <label>Upload BOQ (Excel File)</label>
+            <input type="file" id="filePicker" accept=".xlsx, .xls">
         </div>
         <div class="input-group">
-            <label>Type of Work</label>
-            <select id="workType" onchange="setMargin()">
+            <label>Work Category</label>
+            <select id="workMode" onchange="applyDefaultMargin()">
                 <option value="15">Supply Only (15%)</option>
                 <option value="30">SITC - Full Project (30%)</option>
             </select>
         </div>
         <div class="input-group">
-            <label>Margin (%)</label>
-            <input type="number" id="marginVal" value="15">
+            <label>Profit Margin (%)</label>
+            <input type="number" id="marginInput" value="15">
         </div>
         <div class="input-group">
-            <label>GST (%)</label>
-            <input type="number" id="gstVal" value="18">
+            <label>GST Rate (%)</label>
+            <input type="number" id="gstInput" value="18">
         </div>
     </div>
-    
-    <div class="btn-group">
-        <button class="btn-calc" onclick="calculate()">Process BOQ</button>
-        <button class="btn-pdf" onclick="generatePDF()">Download PDF</button>
+
+    <div class="actions">
+        <button class="btn btn-calc" onclick="runCalculations()">Process & Generate BOQ</button>
+        <button class="btn btn-pdf" onclick="exportToPDF()">Download Professional PDF</button>
     </div>
 
-    <table id="boqTable">
+    <table id="boqResults">
         <thead>
             <tr>
-                <th>Description</th>
+                <th style="width: 35%;">Description</th>
                 <th>Qty</th>
                 <th>Base Rate</th>
                 <th>+Margin</th>
                 <th>+GST</th>
-                <th>Final Unit Rate</th>
-                <th>Total</th>
+                <th>Unit Price</th>
+                <th>Total Amt</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <tr><td colspan="7" style="text-align:center; padding: 40px; color: #999;">Please upload an Excel file and click Process</td></tr>
+        </tbody>
     </table>
 
-    <div class="total-section">
-        <span style="font-size: 14px; opacity: 0.8;">Grand Total (Incl. GST):</span>
-        <h2 id="grandTotal">₹0.00</h2>
+    <div class="grand-total-box">
+        <div>
+            <div style="font-size: 12px; opacity: 0.8; text-transform: uppercase;">Final Tender Value (Incl. All Taxes)</div>
+            <div style="font-size: 14px;">Total Items Calculated: <span id="itemCount">0</span></div>
+        </div>
+        <h2 id="finalTotal">₹0.00</h2>
     </div>
 </div>
 
 <script>
-    let data = [];
+    let excelRows = [];
     const { jsPDF } = window.jspdf;
 
-    function setMargin() {
-        document.getElementById('marginVal').value = document.getElementById('workType').value;
+    function applyDefaultMargin() {
+        document.getElementById('marginInput').value = document.getElementById('workMode').value;
     }
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
+    document.getElementById('filePicker').addEventListener('change', (e) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             const wb = XLSX.read(event.target.result, {type: 'binary'});
-            data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            alert("BOQ Loaded!");
+            excelRows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            alert("Excel File Loaded Successfully!");
         };
         reader.readAsBinaryString(e.target.files[0]);
     });
 
-    function calculate() {
-        const margin = parseFloat(document.getElementById('marginVal').value)/100;
-        const gst = parseFloat(document.getElementById('gstVal').value)/100;
-        const tbody = document.querySelector("#boqTable tbody");
-        tbody.innerHTML = "";
-        let total = 0;
+    function runCalculations() {
+        if(excelRows.length === 0) return alert("Pehle Excel file select karein!");
 
-        data.forEach(item => {
-            let qty = item.Quantity || 0;
-            let base = item.Rate || 0;
+        const margin = parseFloat(document.getElementById('marginInput').value) / 100;
+        const gst = parseFloat(document.getElementById('gstInput').value) / 100;
+        const tbody = document.querySelector("#boqResults tbody");
+        tbody.innerHTML = "";
+        let grandTotal = 0;
+
+        excelRows.forEach(row => {
+            // SMART DETECTION: Ye code har tarah ke header name ko pehchan lega
+            let desc = row.Description || row.Item || row['Item Name'] || row['Particulars'] || "Service/Item";
+            let qty = parseFloat(row.Quantity || row.Qty || row.QTY || row['Nos'] || 0);
+            let base = parseFloat(row.Rate || row.Price || row['Unit Rate'] || row['Basic'] || 0);
+
             let mngAmt = base * margin;
             let rateWithMng = base + mngAmt;
             let gstAmt = rateWithMng * gst;
-            let finalRate = rateWithMng + gstAmt;
-            let rowTotal = finalRate * qty;
-            total += rowTotal;
+            let finalUnitRate = rateWithMng + gstAmt;
+            let rowTotal = finalUnitRate * qty;
+            
+            grandTotal += rowTotal;
 
             tbody.innerHTML += `<tr>
-                <td>${item.Description || 'N/A'}</td>
+                <td><strong>${desc}</strong></td>
                 <td>${qty}</td>
                 <td>₹${base.toFixed(2)}</td>
-                <td>₹${mngAmt.toFixed(2)}</td>
-                <td>₹${gstAmt.toFixed(2)}</td>
-                <td>₹${finalRate.toFixed(2)}</td>
-                <td>₹${rowTotal.toFixed(2)}</td>
+                <td style="color:green">+₹${mngAmt.toFixed(2)}</td>
+                <td style="color:#0056b3">₹${gstAmt.toFixed(2)}</td>
+                <td><strong>₹${finalUnitRate.toFixed(2)}</strong></td>
+                <td><strong>₹${rowTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</strong></td>
             </tr>`;
         });
-        document.getElementById('grandTotal').innerText = "₹" + total.toLocaleString('en-IN');
+
+        document.getElementById('finalTotal').innerText = "₹" + grandTotal.toLocaleString('en-IN', {minimumFractionDigits:2});
+        document.getElementById('itemCount').innerText = excelRows.length;
     }
 
-    function generatePDF() {
-        const doc = new jsPDF();
-        doc.setFontSize(18);
+    function exportToPDF() {
+        const doc = new jsPDF('l', 'mm', 'a4');
+        doc.setFontSize(20);
+        doc.setTextColor(0, 46, 93);
         doc.text("ACCURATE SURVEILLANCE INDIA PVT LTD", 14, 20);
+        
         doc.setFontSize(10);
-        doc.text("Tender Manager: Sumit Sharma | Location: Rohini, Delhi", 14, 28);
-        doc.text("Project Quotation / BOQ Calculation", 14, 35);
+        doc.setTextColor(100);
+        doc.text("Manager: Sumit Sharma | Rohini, Delhi | Contact: 9311984427", 14, 28);
+        doc.text("Quotation Generated via Auto-BOQ Costing Engine", 14, 33);
         
         doc.autoTable({
-            html: '#boqTable',
+            html: '#boqResults',
             startY: 40,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 46, 93] }
+            theme: 'grid',
+            headStyles: { fillColor: [0, 46, 93], fontSize: 9 },
+            styles: { fontSize: 8 }
         });
 
         const finalY = doc.lastAutoTable.finalY + 10;
-        doc.setFontSize(14);
-        doc.text(`Final Quote: ${document.getElementById('grandTotal').innerText}`, 14, finalY);
-        doc.save("BOQ_Quotation_Sumit_Sharma.pdf");
+        doc.setFontSize(16);
+        doc.setTextColor(0);
+        doc.text(`Total Tender Value: ${document.getElementById('finalTotal').innerText}`, 14, finalY);
+        doc.save("Accurate_Surveillance_Quotation.pdf");
     }
 </script>
 
