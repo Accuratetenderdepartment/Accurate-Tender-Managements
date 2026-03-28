@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOQ Calculator - Accurate Surveillance India</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #f4f7f9; }
+        .header-brand { background: #002e5d; color: white; padding: 30px; text-align: center; }
+        .header-brand h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
+        .header-brand p { margin: 5px 0 0; opacity: 0.9; }
+        
+        .user-info { display: flex; justify-content: space-around; background: #fff; padding: 15px; border-bottom: 2px solid #002e5d; font-size: 14px; }
+        .user-info div { font-weight: bold; color: #333; }
+
+        .container { max-width: 1100px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .config-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-calc { background: #28a745; color: white; flex: 2; }
+        .btn-pdf { background: #dc3545; color: white; flex: 1; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #002e5d; color: white; padding: 12px; text-align: left; font-size: 13px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .total-section { margin-top: 20px; padding: 15px; background: #002e5d; color: white; border-radius: 5px; text-align: right; }
+        .total-section h2 { margin: 0; font-size: 22px; }
+    </style>
+</head>
+<body>
+
+<div class="header-brand">
+    <h1>ACCURATE SURVEILLANCE INDIA PVT LTD</h1>
+    <p>Security & Automation Experts</p>
+</div>
+
+<div class="user-info">
+    <div>👤 Manager: Sumit Sharma</div>
+    <div>📍 Location: Rohini, Delhi</div>
+    <div>📞 Contact: [Enter Phone Number]</div>
+</div>
+
+<div class="container">
+    <div class="config-bar">
+        <div class="input-group">
+            <label>Upload BOQ (Excel)</label>
+            <input type="file" id="fileInput">
+        </div>
+        <div class="input-group">
+            <label>Type of Work</label>
+            <select id="workType" onchange="setMargin()">
+                <option value="15">Supply Only (15%)</option>
+                <option value="30">SITC - Full Project (30%)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Margin (%)</label>
+            <input type="number" id="marginVal" value="15">
+        </div>
+        <div class="input-group">
+            <label>GST (%)</label>
+            <input type="number" id="gstVal" value="18">
+        </div>
+    </div>
+    
+    <div class="btn-group">
+        <button class="btn-calc" onclick="calculate()">Process BOQ</button>
+        <button class="btn-pdf" onclick="generatePDF()">Download PDF</button>
+    </div>
+
+    <table id="boqTable">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Base Rate</th>
+                <th>+Margin</th>
+                <th>+GST</th>
+                <th>Final Unit Rate</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="total-section">
+        <span style="font-size: 14px; opacity: 0.8;">Grand Total (Incl. GST):</span>
+        <h2 id="grandTotal">₹0.00</h2>
+    </div>
+</div>
+
+<script>
+    let data = [];
+    const { jsPDF } = window.jspdf;
+
+    function setMargin() {
+        document.getElementById('marginVal').value = document.getElementById('workType').value;
+    }
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const wb = XLSX.read(event.target.result, {type: 'binary'});
+            data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            alert("BOQ Loaded!");
+        };
+        reader.readAsBinaryString(e.target.files[0]);
+    });
+
+    function calculate() {
+        const margin = parseFloat(document.getElementById('marginVal').value)/100;
+        const gst = parseFloat(document.getElementById('gstVal').value)/100;
+        const tbody = document.querySelector("#boqTable tbody");
+        tbody.innerHTML = "";
+        let total = 0;
+
+        data.forEach(item => {
+            let qty = item.Quantity || 0;
+            let base = item.Rate || 0;
+            let mngAmt = base * margin;
+            let rateWithMng = base + mngAmt;
+            let gstAmt = rateWithMng * gst;
+            let finalRate = rateWithMng + gstAmt;
+            let rowTotal = finalRate * qty;
+            total += rowTotal;
+
+            tbody.innerHTML += `<tr>
+                <td>${item.Description || 'N/A'}</td>
+                <td>${qty}</td>
+                <td>₹${base.toFixed(2)}</td>
+                <td>₹${mngAmt.toFixed(2)}</td>
+                <td>₹${gstAmt.toFixed(2)}</td>
+                <td>₹${finalRate.toFixed(2)}</td>
+                <td>₹${rowTotal.toFixed(2)}</td>
+            </tr>`;
+        });
+        document.getElementById('grandTotal').innerText = "₹" + total.toLocaleString('en-IN');
+    }
+
+    function generatePDF() {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("ACCURATE SURVEILLANCE INDIA PVT LTD", 14, 20);
+        doc.setFontSize(10);
+        doc.text("Tender Manager: Sumit Sharma | Location: Rohini, Delhi", 14, 28);
+        doc.text("Project Quotation / BOQ Calculation", 14, 35);
+        
+        doc.autoTable({
+            html: '#boqTable',
+            startY: 40,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 46, 93] }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(14);
+        doc.text(`Final Quote: ${document.getElementById('grandTotal').innerText}`, 14, finalY);
+        doc.save("BOQ_Quotation_Sumit_Sharma.pdf");
+    }
+</script>
+
+</body>
+</html>
